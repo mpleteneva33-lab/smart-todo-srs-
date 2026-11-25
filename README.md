@@ -39,6 +39,6 @@
 
 - [План проекта](docs/lab-02/plan.md)
 - [Беклог с историями и критериями приёмки](docs/lab-02/backlog.md)
-- [Диаграмма Ганта](docs/lab-02/gantt.png)
-- [Roadmap в GitHub Projects](https://github.com/users/mpleteneva33-lab/projects/1/views/2)
+- [Диаграмма Ганта в GitHub Projects](https://github.com/users/mpleteneva33-lab/projects/1/views/2)
+- [Копия диаграммы в PNG](docs/lab-02/gantt.png)
 - [План проекта в Wiki](https://github.com/mpleteneva33-lab/smart-todo-srs-/wiki/План-проекта)

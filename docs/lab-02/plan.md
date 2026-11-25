@@ -30,7 +30,8 @@ P0 — подготовка, базовые функции и контроль �
 
 ## Календарный план
 
-- [Roadmap в GitHub Projects](https://github.com/users/mpleteneva33-lab/projects/1/views/2)
+- [Диаграмма Ганта в GitHub Projects](https://github.com/users/mpleteneva33-lab/projects/1/views/2)
+- [Беклог и даты в GitHub Projects](https://github.com/users/mpleteneva33-lab/projects/1/views/1)
 - [План проекта в Wiki](https://github.com/mpleteneva33-lab/smart-todo-srs-/wiki/План-проекта)
 
 В календарном плане для всех задач указаны начало, окончание и коды предшественников. Задача начинается после завершения всех указанных предшественников.
