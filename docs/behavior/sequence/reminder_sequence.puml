@@ -1,0 +1,75 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 15
+skinparam defaultFontColor #18354B
+skinparam shadowing false
+skinparam ArrowColor #3C627C
+skinparam titleFontColor #10304B
+skinparam titleFontSize 22
+hide footbox
+skinparam sequence {
+  ParticipantBackgroundColor #E8F2F8
+  ParticipantBorderColor #547C95
+  ActorBackgroundColor #E8F2F8
+  ActorBorderColor #547C95
+  LifeLineBorderColor #91A8BA
+  GroupBackgroundColor #F1F6FA
+  GroupBorderColor #6C899D
+  DividerBackgroundColor #EDF5F8
+}
+skinparam NoteBackgroundColor #F3F7FA
+skinparam NoteBorderColor #8EA8BA
+title Настройка и срабатывание напоминаний
+actor "Пользователь" as User
+boundary "Интерфейс\nindex.html" as UI
+control "Обработчики\nscript.js" as App
+participant "Модель и таймер\nmodel.js" as Model
+database "Хранилище\nlocalStorage" as Storage
+participant "Таймер браузера" as Clock
+
+User -> UI : Меняет переключатель или интервал
+UI -> App : change в настройках
+App -> Model : reminderSettings(включено, минуты)
+Model --> App : Настройки с интервалом 30, 60 или 120
+App -> App : Принять настройки в памяти
+App -> Model : writeState(localStorage, state)
+Model -> Storage : setItem(water-tracker-v1, JSON)
+Storage --> Model : Результат записи
+Model --> App : Результат записи
+opt Сохранение завершилось ошибкой
+  App -> UI : «Не удалось сохранить данные»
+end
+App -> UI : Скрыть предыдущее сообщение
+App -> Model : reminderTimer.update(настройки)
+
+alt Активный интервал изменился
+  opt Предыдущий таймер был запланирован
+    Model -> Clock : clearTimeout(предыдущий)
+  end
+  opt Напоминания включены
+    Model -> Clock : setTimeout(tick, минуты × 60 000)
+  end
+else Активный интервал прежний
+  Model -> Model : Продолжить текущий отсчёт,\nесли он запущен
+end
+
+loop Пока интервал активен
+  Clock -> Model : tick() после ожидания
+  Model -> Clock : Запланировать следующее срабатывание
+  Model -> App : onReminder()
+  opt Вкладка видима и сообщение скрыто
+    App -> UI : Показать сообщение
+    UI --> User : «Пора выпить воды»
+  end
+  opt Пользователь закрывает сообщение
+    User -> UI : Нажимает «Закрыть»
+    UI -> App : click
+    App -> UI : Скрыть сообщение и вернуть фокус к вводу
+  end
+end
+
+note over App, Model
+  Добавление воды сохраняет журнал\nи сохраняет текущий отсчёт.
+end note
+@enduml

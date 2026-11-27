@@ -1,0 +1,59 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 15
+skinparam defaultFontColor #18354B
+skinparam shadowing false
+skinparam ArrowColor #3C627C
+skinparam titleFontColor #10304B
+skinparam titleFontSize 22
+hide footbox
+skinparam sequence {
+  ParticipantBackgroundColor #E8F2F8
+  ParticipantBorderColor #547C95
+  ActorBackgroundColor #E8F2F8
+  ActorBorderColor #547C95
+  LifeLineBorderColor #91A8BA
+  GroupBackgroundColor #F1F6FA
+  GroupBorderColor #6C899D
+  DividerBackgroundColor #EDF5F8
+}
+skinparam NoteBackgroundColor #F3F7FA
+skinparam NoteBorderColor #8EA8BA
+title Добавление порции воды
+actor "Пользователь" as User
+boundary "Интерфейс\nindex.html" as UI
+control "Обработчики\nscript.js" as App
+participant "Модель\nmodel.js" as Model
+database "Хранилище\nlocalStorage" as Storage
+
+User -> UI : Вводит объём и нажимает «Добавить»
+UI -> App : submit формы объёма
+App -> Model : parseAmount(ввод)
+Model --> App : Объём или null
+
+alt Объём от 1 до 2 000 мл целым числом
+  App -> Model : addEntry(state, объём, Date.now())
+  Model --> App : Новое состояние с порцией
+  App -> App : Принять состояние в памяти
+  App -> Model : writeState(localStorage, state)
+  Model -> Storage : setItem(water-tracker-v1, JSON)
+  alt Запись в хранилище выполнена
+    Storage --> Model : Записано
+    Model --> App : Сохранение завершено
+  else Ошибка хранилища
+    Storage --> Model : Исключение
+    Model --> App : Исключение
+    App -> UI : «Не удалось сохранить данные»
+  end
+  App -> Model : getDay(state, сейчас)
+  Model --> App : Записи за сегодня и сумма
+  App -> Model : getProgress(сумма, цель)
+  Model --> App : Прогресс или null
+  App -> UI : Очистить поле, обновить журнал и сводку
+  UI --> User : Показать новую порцию и итог
+else Недопустимый ввод
+  App -> UI : Показать допустимый диапазон
+  UI --> User : Журнал остаётся прежним
+end
+@enduml
