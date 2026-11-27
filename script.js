@@ -15,6 +15,19 @@ const waterAmount = byId("water-amount");
 const goalAmount = byId("goal-amount");
 const deleteDialog = byId("delete-dialog");
 const entriesList = byId("entries");
+const remindersEnabled = byId("reminders-enabled");
+const reminderInterval = byId("reminder-interval");
+const reminderBanner = byId("reminder");
+const reminderText = byId("reminder-text");
+const reminderTimer = tracker.createReminderTimer({
+  schedule: (callback, delay) => window.setTimeout(callback, delay),
+  cancel: (timer) => window.clearTimeout(timer),
+  onReminder: () => {
+    if (document.hidden || !reminderBanner.hidden) return;
+    reminderBanner.hidden = false;
+    reminderText.textContent = "Пора выпить воды";
+  }
+});
 
 let state = tracker.createState();
 let displayedDay;
@@ -109,6 +122,23 @@ function renderProgress(total) {
   byId("goal-reached").hidden = !progress.reached;
 }
 
+function renderReminders() {
+  remindersEnabled.checked = state.reminders.enabled;
+  reminderInterval.value = state.reminders.minutes;
+  if (!state.reminders.enabled) reminderBanner.hidden = true;
+  reminderTimer.update(state.reminders);
+}
+
+function saveReminders() {
+  const reminders = tracker.reminderSettings({
+    enabled: remindersEnabled.checked,
+    minutes: Number(reminderInterval.value)
+  });
+  save({ ...state, reminders });
+  reminderBanner.hidden = true;
+  renderReminders();
+}
+
 function refreshDay() {
   const now = new Date();
   if (displayedDay !== tracker.dayKey(now)) renderJournal(now);
@@ -160,14 +190,23 @@ deleteDialog.addEventListener("close", () => {
   pendingDelete = null;
 });
 
+remindersEnabled.addEventListener("change", saveReminders);
+reminderInterval.addEventListener("change", saveReminders);
+byId("close-reminder").addEventListener("click", () => {
+  reminderBanner.hidden = true;
+  waterAmount.focus();
+});
+
 window.addEventListener("focus", refreshDay);
 document.addEventListener("visibilitychange", refreshDay);
 window.addEventListener("storage", (event) => {
   if (event.key === tracker.STORAGE_KEY || event.key === null) {
     readSavedState();
     renderJournal();
+    renderReminders();
   }
 });
 
 readSavedState();
+renderReminders();
 refreshDay();

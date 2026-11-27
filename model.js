@@ -2,6 +2,7 @@
 
 (function () {
   const STORAGE_KEY = "water-tracker-v1";
+  const REMINDER_INTERVALS = [30, 60, 120];
 
   function parseMilliliters(value, max) {
     const text = value.trim();
@@ -23,8 +24,15 @@
     return { percent: Math.round(100 * total / goal), reached: total >= goal };
   }
 
+  function reminderSettings(value) {
+    return {
+      enabled: value?.enabled === true,
+      minutes: REMINDER_INTERVALS.includes(value?.minutes) ? value.minutes : 60
+    };
+  }
+
   function createState() {
-    return { entries: [], goal: null };
+    return { entries: [], goal: null, reminders: reminderSettings() };
   }
 
   function readState(storage) {
@@ -39,7 +47,7 @@
       Number.isFinite(entry.at) && Math.abs(entry.at) <= 8.64e15
     );
     const goal = Number.isInteger(data.goal) ? parseGoal(String(data.goal)) : null;
-    return { entries, goal };
+    return { entries, goal, reminders: reminderSettings(data.reminders) };
   }
 
   function writeState(storage, state) {
@@ -79,9 +87,30 @@
     return midnight.getTime();
   }
 
+  function createReminderTimer({ schedule, cancel, onReminder }) {
+    let timer;
+    let minutes = null;
+
+    function tick() {
+      timer = schedule(tick, minutes * 60000);
+      onReminder();
+    }
+
+    function update(settings) {
+      const next = settings.enabled ? settings.minutes : null;
+      if (minutes === next) return;
+      if (timer !== undefined) cancel(timer);
+      timer = undefined;
+      minutes = next;
+      if (minutes !== null) timer = schedule(tick, minutes * 60000);
+    }
+
+    return { update };
+  }
+
   const model = {
     STORAGE_KEY, parseAmount, parseGoal, getProgress, createState, readState, writeState,
-    dayKey, getDay, addEntry, removeEntry, nextMidnight
+    dayKey, getDay, addEntry, removeEntry, nextMidnight, reminderSettings, createReminderTimer
   };
 
   if (typeof module !== "undefined" && module.exports) {

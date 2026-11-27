@@ -92,7 +92,7 @@ test("loads a journal saved before the goal was introduced", () => {
   const storage = memoryStorage();
   const entries = [{ id: 1, at: +morning, amount: 750 }];
   storage.setItem(model.STORAGE_KEY, JSON.stringify({ entries }));
-  assert.deepEqual(model.readState(storage), { entries, goal: null });
+  assert.deepEqual(model.readState(storage), { ...model.createState(), entries });
 });
 
 test("restores the goal after reload and keeps it at midnight", () => {
