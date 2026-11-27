@@ -3,15 +3,28 @@
 (function () {
   const STORAGE_KEY = "water-tracker-v1";
 
-  function parseAmount(value) {
+  function parseMilliliters(value, max) {
     const text = value.trim();
     if (!/^[0-9]+$/.test(text)) return null;
     const number = Number(text);
-    return number >= 1 && number <= 2000 ? number : null;
+    return number >= 1 && number <= max ? number : null;
+  }
+
+  function parseAmount(value) {
+    return parseMilliliters(value, 2000);
+  }
+
+  function parseGoal(value) {
+    return parseMilliliters(value, 10000);
+  }
+
+  function getProgress(total, goal) {
+    if (goal === null) return null;
+    return { percent: Math.round(100 * total / goal), reached: total >= goal };
   }
 
   function createState() {
-    return { entries: [] };
+    return { entries: [], goal: null };
   }
 
   function readState(storage) {
@@ -25,7 +38,8 @@
       Number.isInteger(entry.amount) && entry.amount >= 1 && entry.amount <= 2000 &&
       Number.isFinite(entry.at) && Math.abs(entry.at) <= 8.64e15
     );
-    return { entries };
+    const goal = Number.isInteger(data.goal) ? parseGoal(String(data.goal)) : null;
+    return { entries, goal };
   }
 
   function writeState(storage, state) {
@@ -66,7 +80,7 @@
   }
 
   const model = {
-    STORAGE_KEY, parseAmount, createState, readState, writeState,
+    STORAGE_KEY, parseAmount, parseGoal, getProgress, createState, readState, writeState,
     dayKey, getDay, addEntry, removeEntry, nextMidnight
   };
 

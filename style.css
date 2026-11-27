@@ -65,10 +65,18 @@ h1 {
 .tracker-content {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr);
+  grid-template-areas:
+    "entry history"
+    "settings history";
+  grid-template-rows: auto 1fr;
   align-items: start;
   gap: 1rem;
   margin-top: 1rem;
 }
+
+.entry-panel { grid-area: entry; }
+.settings-panel { grid-area: settings; }
+.history-panel { grid-area: history; }
 
 .panel {
   min-width: 0;
@@ -232,5 +240,48 @@ dialog::backdrop {
 @media (max-width: 46rem) {
   .tracker-content {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "entry" "history" "settings";
   }
+}
+
+.day .goal-prompt {
+  margin-top: .5rem;
+}
+
+.goal-progress {
+  max-width: 27rem;
+  margin-top: .65rem;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+  color: #e0f3fa;
+  font-variant-numeric: tabular-nums;
+}
+
+progress {
+  display: block;
+  width: 100%;
+  height: .6rem;
+  margin-top: .48rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 1rem;
+  background: #2e546b;
+  color: #83e0e3;
+}
+
+progress::-webkit-progress-bar {
+  background: #2e546b;
+}
+
+progress::-webkit-progress-value {
+  border-radius: 1rem;
+  background: #83e0e3;
+}
+
+.goal-reached {
+  font-weight: 650;
 }
