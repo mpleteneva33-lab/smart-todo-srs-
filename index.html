@@ -47,6 +47,12 @@
         </form>
       </section>
 
+      <section class="panel history-panel" aria-labelledby="history-heading">
+        <h2 id="history-heading">Записи за сегодня</h2>
+        <p class="empty" id="empty">Сегодня записей пока нет.</p>
+        <ul class="entry-list" id="entries" aria-label="Выпитая вода"></ul>
+      </section>
+
       <section class="panel settings-panel" aria-labelledby="settings-heading">
         <h2 id="settings-heading">Настройки</h2>
         <form id="goal-form" novalidate>
@@ -60,14 +66,27 @@
           <p class="hint" id="goal-hint">От 1 до 10 000 мл</p>
           <p class="field-error" id="goal-error" role="alert" hidden></p>
         </form>
-      </section>
 
-      <section class="panel history-panel" aria-labelledby="history-heading">
-        <h2 id="history-heading">Записи за сегодня</h2>
-        <p class="empty" id="empty">Сегодня записей пока нет.</p>
-        <ul class="entry-list" id="entries" aria-label="Выпитая вода"></ul>
+        <div class="reminder-settings">
+          <label class="toggle-label" for="reminders-enabled">
+            <input id="reminders-enabled" type="checkbox">
+            Напоминать о воде
+          </label>
+          <label for="reminder-interval">Интервал напоминаний</label>
+          <select id="reminder-interval" aria-describedby="reminder-hint">
+            <option value="30">30 минут</option>
+            <option value="60" selected>60 минут</option>
+            <option value="120">120 минут</option>
+          </select>
+          <p class="hint" id="reminder-hint">Напоминания появляются при открытой активной вкладке.</p>
+        </div>
       </section>
     </div>
+
+    <aside class="reminder-message" id="reminder" aria-labelledby="reminder-text" hidden>
+      <strong id="reminder-text" role="status">Пора выпить воды</strong>
+      <button type="button" id="close-reminder" class="secondary">Закрыть</button>
+    </aside>
 
     <dialog id="delete-dialog" aria-labelledby="delete-heading" aria-describedby="delete-description">
       <form method="dialog">
