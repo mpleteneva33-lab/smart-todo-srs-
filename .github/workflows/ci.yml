@@ -25,3 +25,5 @@ jobs:
         run: node --check model.js && node --check script.js
       - name: Run unit tests
         run: node --test tests/*.test.cjs
+      - name: Test SQLite schema
+        run: python3 tests/test_database.py

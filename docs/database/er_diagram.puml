@@ -1,0 +1,62 @@
+@startuml
+!pragma layout smetana
+hide circle
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 15
+skinparam shadowing false
+skinparam backgroundColor #FFFFFF
+skinparam classBackgroundColor #F4F9FC
+skinparam classBorderColor #426980
+skinparam classHeaderBackgroundColor #E0F0F6
+skinparam classFontColor #152D42
+skinparam ArrowColor #315B70
+skinparam titleFontColor #10304B
+skinparam titleFontSize 23
+skinparam nodesep 42
+skinparam ranksep 50
+
+title Трекер потребления воды — ER-диаграмма
+
+entity "profiles\nЛокальные профили" as Profiles {
+  PK  profile_id : INTEGER
+  --
+  display_name : TEXT
+}
+
+entity "water_entries\nЖурнал воды" as Entries {
+  PK, FK  profile_id : INTEGER
+  PK  entry_no : INTEGER
+  --
+  amount_ml : INTEGER
+  consumed_at_ms : INTEGER
+}
+
+entity "daily_goals\nДневные цели" as Goals {
+  PK, FK  profile_id : INTEGER
+  --
+  target_ml : INTEGER
+}
+
+entity "reminder_settings\nНастройки напоминаний" as Settings {
+  PK, FK  profile_id : INTEGER
+  --
+  enabled : INTEGER
+  FK  interval_minutes : INTEGER
+}
+
+entity "reminder_intervals\nИнтервалы" as Intervals {
+  PK  interval_minutes : INTEGER
+  --
+  label : TEXT
+}
+
+Profiles ||--o{ Entries
+Profiles ||--o| Goals
+Profiles ||--o| Settings
+Intervals ||--o{ Settings
+
+legend bottom
+  PK — первичный ключ · FK — внешний ключ
+  Ключ записи журнала состоит из profile_id и entry_no.
+endlegend
+@enduml
