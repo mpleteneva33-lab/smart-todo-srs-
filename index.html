@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#10304b">
   <title>Трекер потребления воды</title>
   <link rel="stylesheet" href="style.css">
+  <script src="model.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -13,7 +14,47 @@
     <header class="day">
       <h1>Трекер потребления воды</h1>
       <p id="today-date">Сегодня</p>
+      <div class="summary" aria-live="polite" aria-atomic="true">
+        <span class="summary-label">Выпито сегодня</span>
+        <span class="summary-total"><strong id="total">0</strong> мл</span>
+      </div>
     </header>
+
+    <p id="storage-error" class="notice" role="alert" hidden></p>
+
+    <div class="tracker-content">
+      <section class="panel entry-panel" aria-labelledby="add-heading">
+        <h2 id="add-heading">Добавить воду</h2>
+        <form id="water-form" novalidate>
+          <label for="water-amount">Объём в миллилитрах</label>
+          <div class="form-row">
+            <input id="water-amount" type="text" inputmode="numeric" enterkeyhint="done"
+              autocomplete="off" maxlength="16" placeholder="Например, 250"
+              aria-describedby="water-hint water-error">
+            <button type="submit">Добавить</button>
+          </div>
+          <p class="hint" id="water-hint">От 1 до 2 000 мл за запись</p>
+          <p class="field-error" id="water-error" role="alert" hidden></p>
+        </form>
+      </section>
+
+      <section class="panel history-panel" aria-labelledby="history-heading">
+        <h2 id="history-heading">Записи за сегодня</h2>
+        <p class="empty" id="empty">Сегодня записей пока нет.</p>
+        <ul class="entry-list" id="entries" aria-label="Выпитая вода"></ul>
+      </section>
+    </div>
+
+    <dialog id="delete-dialog" aria-labelledby="delete-heading" aria-describedby="delete-description">
+      <form method="dialog">
+        <h2 id="delete-heading">Удалить запись?</h2>
+        <p id="delete-description"></p>
+        <div class="dialog-actions">
+          <button value="cancel" type="submit" class="secondary" autofocus>Отмена</button>
+          <button value="delete" type="submit" class="danger">Удалить</button>
+        </div>
+      </form>
+    </dialog>
   </main>
 </body>
 </html>
