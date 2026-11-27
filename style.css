@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: #152d42;
+  background: #edf5f8;
+}
+
+body {
+  margin: 0;
+}
+
+.tracker {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 3rem);
+}
+
+.day {
+  padding: clamp(1.35rem, 4vw, 2rem);
+  border-radius: 1.4rem;
+  background: #10304b;
+  color: #fff;
+}
+
+h1, h2, p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(1.6rem, 4vw, 2.45rem);
+  line-height: 1.15;
+}
+
+.day p {
+  margin-top: .6rem;
+  color: #c2e3f1;
+}
