@@ -59,3 +59,15 @@
 - [Описание и результаты проверок](docs/development-process.md)
 - [Pull Requests](https://github.com/mpleteneva33-lab/smart-todo-srs-/pulls?q=is%3Apr+is%3Amerged)
 - [GitHub Actions](https://github.com/mpleteneva33-lab/smart-todo-srs-/actions/workflows/ci.yml)
+
+## Лабораторная работа № 4 — База данных
+
+Подготовлена схема SQLite в третьей нормальной форме. В пяти таблицах хранятся локальные профили, записи о воде, дневные цели, настройки напоминаний и допустимые интервалы.
+
+- [ER-диаграмма PNG](docs/database/er_diagram.png) и [SVG](docs/database/er_diagram.svg)
+- [Создание схемы и индексов](database/schema.sql) и [тестовые данные](database/seed_data.sql)
+- [Обоснование 1НФ, 2НФ и 3НФ в репозитории](database/normalization.md) и [в Wiki](https://github.com/mpleteneva33-lab/smart-todo-srs-/wiki/normalization)
+
+**Как проверить.** В SQLite 3.37 или новее создайте пустую базу, выполните `database/schema.sql`, затем `database/seed_data.sql`. Автоматическая проверка запускается командой `python tests/test_database.py` из корня репозитория.
+
+Схема SQLite подготовлена для лабораторной №4. Готовое веб-приложение из лабораторной №3 сохраняет данные в браузере.
