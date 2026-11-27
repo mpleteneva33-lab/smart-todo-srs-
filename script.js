@@ -12,6 +12,7 @@ const timeFormat = new Intl.DateTimeFormat("ru-RU", {
 
 const storageError = byId("storage-error");
 const waterAmount = byId("water-amount");
+const goalAmount = byId("goal-amount");
 const deleteDialog = byId("delete-dialog");
 const entriesList = byId("entries");
 
@@ -29,6 +30,7 @@ function showStorageError(message) {
 function readSavedState() {
   try {
     state = tracker.readState(window.localStorage);
+    goalAmount.value = state.goal ?? "";
   } catch {
     showStorageError("Не удалось загрузить сохранённые данные.");
   }
@@ -62,6 +64,7 @@ function renderJournal(now = new Date()) {
   const day = tracker.getDay(state, now);
   byId("total").textContent = number.format(day.total);
   byId("empty").hidden = day.entries.length > 0;
+  renderProgress(day.total);
 
   const rows = document.createDocumentFragment();
   for (const entry of day.entries) {
@@ -94,6 +97,18 @@ function renderJournal(now = new Date()) {
   entriesList.replaceChildren(rows);
 }
 
+function renderProgress(total) {
+  const progress = tracker.getProgress(total, state.goal);
+  byId("goal-prompt").hidden = progress !== null;
+  byId("goal-progress").hidden = progress === null;
+  if (progress === null) return;
+
+  byId("goal-total").textContent = number.format(state.goal);
+  byId("goal-percent").textContent = number.format(progress.percent) + "%";
+  byId("progress").value = Math.min(100, progress.percent);
+  byId("goal-reached").hidden = !progress.reached;
+}
+
 function refreshDay() {
   const now = new Date();
   if (displayedDay !== tracker.dayKey(now)) renderJournal(now);
@@ -115,6 +130,21 @@ byId("water-form").addEventListener("submit", (event) => {
   waterAmount.value = "";
   renderJournal();
   waterAmount.focus();
+});
+
+const goalError = byId("goal-error");
+goalAmount.addEventListener("input", () => setFieldError(goalAmount, goalError));
+byId("goal-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const goal = tracker.parseGoal(goalAmount.value);
+  if (goal === null) {
+    setFieldError(goalAmount, goalError, "Введите целое число от 1 до 10 000 мл.");
+    return;
+  }
+  setFieldError(goalAmount, goalError);
+  save({ ...state, goal });
+  goalAmount.value = goal;
+  renderProgress(tracker.getDay(state, new Date()).total);
 });
 
 deleteDialog.addEventListener("close", () => {
