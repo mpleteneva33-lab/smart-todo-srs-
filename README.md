@@ -42,3 +42,20 @@
 - [Диаграмма Ганта в GitHub Projects](https://github.com/users/mpleteneva33-lab/projects/1/views/2)
 - [Копия диаграммы в PNG](docs/lab-02/gantt.png)
 - [План проекта в Wiki](https://github.com/mpleteneva33-lab/smart-todo-srs-/wiki/План-проекта)
+
+## Лабораторная работа № 3
+
+Готовый трекер записывает выпитую воду, показывает итог и прогресс за день, удаляет записи с подтверждением и напоминает о воде через 30, 60 или 120 минут. Записи и настройки автоматически сохраняются в текущем браузере.
+
+### Как запустить
+
+1. Откройте [релиз v1.0.0](https://github.com/mpleteneva33-lab/smart-todo-srs-/releases/tag/v1.0.0) и скачайте архив **Source code (zip)**.
+2. Распакуйте архив и откройте `index.html` в Chrome или Edge. Установка зависимостей не нужна.
+3. Введите объём и нажмите **Добавить**. Дневную цель и напоминания можно включить в разделе **Настройки**.
+
+При смене даты журнал показывает записи нового дня. Ранее внесённые записи сохраняются. Напоминания появляются, пока вкладка открыта и активна.
+
+- [Процесс разработки в Wiki](https://github.com/mpleteneva33-lab/smart-todo-srs-/wiki/Процесс-разработки)
+- [Описание и результаты проверок](docs/development-process.md)
+- [Pull Requests](https://github.com/mpleteneva33-lab/smart-todo-srs-/pulls?q=is%3Apr+is%3Amerged)
+- [GitHub Actions](https://github.com/mpleteneva33-lab/smart-todo-srs-/actions/workflows/ci.yml)
