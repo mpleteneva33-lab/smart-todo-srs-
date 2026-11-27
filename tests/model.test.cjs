@@ -71,3 +71,36 @@ test("calculates a day with 1000 entries", () => {
   const state = model.addEntry({ entries }, 500, +evening);
   assert.equal(model.getDay(state, evening).total, 250500);
 });
+
+test("validates goal boundaries separately from one entry", () => {
+  assert.equal(model.parseGoal("1"), 1);
+  assert.equal(model.parseGoal("10000"), 10000);
+  for (const value of ["0", "10001", "", "2.5", "1e3"]) {
+    assert.equal(model.parseGoal(value), null, value);
+  }
+});
+
+test("rounds daily progress and reports values above 100 percent", () => {
+  assert.equal(model.getProgress(750, null), null);
+  assert.deepEqual(model.getProgress(750, 2000), { percent: 38, reached: false });
+  assert.deepEqual(model.getProgress(1999, 2000), { percent: 100, reached: false });
+  assert.deepEqual(model.getProgress(2000, 2000), { percent: 100, reached: true });
+  assert.deepEqual(model.getProgress(2200, 2000), { percent: 110, reached: true });
+});
+
+test("loads a journal saved before the goal was introduced", () => {
+  const storage = memoryStorage();
+  const entries = [{ id: 1, at: +morning, amount: 750 }];
+  storage.setItem(model.STORAGE_KEY, JSON.stringify({ entries }));
+  assert.deepEqual(model.readState(storage), { entries, goal: null });
+});
+
+test("restores the goal after reload and keeps it at midnight", () => {
+  const storage = memoryStorage();
+  const state = model.addEntry({ ...model.createState(), goal: 2000 }, 750, +morning);
+  model.writeState(storage, state);
+  const loaded = model.readState(storage);
+  assert.equal(loaded.goal, 2000);
+  assert.deepEqual(model.getProgress(model.getDay(loaded, tomorrow).total, loaded.goal),
+    { percent: 0, reached: false });
+});
