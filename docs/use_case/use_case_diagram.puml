@@ -1,0 +1,69 @@
+@startuml
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 15
+skinparam defaultFontColor #18354B
+skinparam shadowing false
+skinparam ArrowColor #3C627C
+skinparam titleFontColor #10304B
+skinparam titleFontSize 22
+skinparam nodesep 24
+skinparam ranksep 55
+skinparam linetype spline
+skinparam usecase {
+  BackgroundColor #F1F7FA
+  BorderColor #507C96
+}
+skinparam rectangle {
+  BackgroundColor #FCFDFE
+  BorderColor #507C96
+}
+skinparam actor {
+  BackgroundColor #E8F2F8
+  BorderColor #507C96
+}
+
+title Трекер потребления воды — варианты использования
+
+actor "Пользователь" as User
+
+rectangle "Трекер потребления воды" {
+  usecase "Открыть трекер" as Open
+  usecase "Посмотреть дневной итог\nи журнал" as Journal
+  usecase "Добавить порцию воды" as Add
+  usecase "Задать дневную цель" as Goal
+  usecase "Удалить запись" as Delete
+  usecase "Настроить напоминания" as Configure
+  usecase "Получить напоминание" as Notify
+
+  usecase "Восстановить данные" as Restore
+  usecase "Показать процент\nвыполнения цели" as Progress
+  usecase "Проверить ввод" as Validate
+  usecase "Сохранить изменение\nв браузере" as Save
+  usecase "Запросить подтверждение" as Confirm
+}
+
+actor "Таймер браузера" as Timer <<система>>
+
+
+
+User -- Open
+User -- Journal
+User -- Add
+User -- Goal
+User -- Delete
+User -- Configure
+User -- Notify
+
+Open ..> Restore : <<include>>
+Journal <.. Progress : <<extend>>\n[цель задана]
+Add ..> Validate : <<include>>
+Goal ..> Validate : <<include>>
+Add ..> Save : <<include>>
+Goal ..> Save : <<include>>
+Delete ..> Confirm : <<include>>
+Delete ..> Save : <<include>>
+Configure ..> Save : <<include>>
+Notify -- Timer
+@enduml

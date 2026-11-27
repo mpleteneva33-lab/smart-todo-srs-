@@ -1,0 +1,81 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Segoe UI
+skinparam defaultFontSize 15
+skinparam defaultFontColor #18354B
+skinparam shadowing false
+skinparam ArrowColor #3C627C
+skinparam titleFontColor #10304B
+skinparam titleFontSize 22
+hide footbox
+skinparam sequence {
+  ParticipantBackgroundColor #E8F2F8
+  ParticipantBorderColor #547C95
+  ActorBackgroundColor #E8F2F8
+  ActorBorderColor #547C95
+  LifeLineBorderColor #91A8BA
+  GroupBackgroundColor #F1F6FA
+  GroupBorderColor #6C899D
+  DividerBackgroundColor #EDF5F8
+}
+skinparam NoteBackgroundColor #F3F7FA
+skinparam NoteBorderColor #8EA8BA
+title Дневной сценарий работы трекера
+actor "Пользователь" as User
+boundary "Интерфейс\nindex.html" as UI
+control "Обработчики\nscript.js" as App
+participant "Модель\nmodel.js" as Model
+database "Хранилище\nlocalStorage" as Storage
+
+== Открытие приложения ==
+User -> UI : Открывает index.html
+UI -> App : Инициализация страницы
+App -> Model : readState(localStorage)
+Model -> Storage : getItem(water-tracker-v1)
+alt Хранилище читается и данные корректны
+  Storage --> Model : JSON или null при первом запуске
+  Model --> App : Восстановленное или начальное состояние
+else Данные не читаются
+  Model --> App : Ошибка чтения или разбора
+  App -> UI : «Не удалось загрузить сохранённые данные»
+end
+App -> Model : reminderTimer.update(настройки)
+App -> Model : getDay(state, сейчас) и getProgress(...)
+Model --> App : Записи за сегодня, сумма и прогресс
+App -> UI : Показать журнал и настройки
+App -> App : Запланировать проверку к полуночи
+
+== Дневная цель ==
+opt Пользователь задаёт или меняет цель
+  User -> UI : Вводит цель и нажимает «Сохранить цель»
+  UI -> App : submit формы цели
+  App -> Model : parseGoal(ввод)
+  Model --> App : Цель или null
+  alt Целое число от 1 до 10 000 мл
+    App -> App : Обновить цель в памяти
+    ref over App, Storage : Сохранение изменений\nиз диаграммы добавления воды
+    App -> Model : Рассчитать прогресс для новой цели
+    Model --> App : Округлённый процент и признак достижения
+    App -> UI : Обновить цель и прогресс
+  else Недопустимый ввод
+    App -> UI : Показать ошибку, оставить прежнюю цель
+  end
+end
+
+== Учёт воды ==
+loop Для каждой добавленной порции
+  ref over User, Storage : Добавление порции воды
+end
+opt Пользователь исправляет журнал
+  ref over User, Storage : Удаление записи с подтверждением
+end
+
+== Новый локальный день ==
+App -> App : refreshDay() к полуночи\nили при возврате к вкладке
+opt Календарная дата изменилась
+  App -> Model : getDay(state, новая дата) и getProgress(...)
+  Model --> App : Сумма нового дня и прогресс сохранённой цели
+  App -> UI : Показать записи нового дня
+  UI --> User : 0 мл, если новых порций нет
+end
+@enduml
